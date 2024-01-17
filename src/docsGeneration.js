@@ -50,7 +50,16 @@ curl  -X ${thisRoute.method} http://localhost:${process.env.PORT}/api/${thisRout
   let routeReplacement1 = `${docsMDCode} 
 //@insert1`
   let content = await readFile(targetRootDir + '/docs/API.docs.md')
-  let result1 = await singleReplace1(routeReplacement1, content)
+  // if file already has doc block for this route then mark as replaced
+  // Only manual editing by design
+  let docBlockTitle = `## /api/${thisRoute.name}`
+  const d = new Date()
+
+  // content = content.replace(docBlockTitle, docBlockTitle + '\n#### replaced')
+  let result1 = await singleReplace1(
+    routeReplacement1,
+    content.replace(docBlockTitle, docBlockTitle + ' ---- (replaced   ' + d.toLocaleString() + ')')
+  )
   console.log(
     'curl  -X ' +
       thisRoute.method +
@@ -61,5 +70,6 @@ curl  -X ${thisRoute.method} http://localhost:${process.env.PORT}/api/${thisRout
       ' ' +
       curlBody
   )
+
   await writeFile(9, targetRootDir + '/docs/API.docs.md', result1)
 }
