@@ -91,10 +91,10 @@ export const doGenerateRoute = async (thisRoute, gen) => {
   await writeFile(1, targetRootDir + '/routes/index.js', result2)
 
   // *** Step 2 - insert route into controllers/index.js***********************************************
-  routeReplacement1 = `const ${route} = require('./${route}-${methodLowerCase}.controller') 
-//@insert1`
-  routeReplacement2 = `${route}, 
-//@insert2`
+  routeReplacement1 = `const ${route} = require('./${route}-${methodLowerCase}.controller')
+  //@insert1`
+  routeReplacement2 = `${route},
+  //@insert2`
 
   content = await readFile(targetRootDir + '/controllers/index.js')
   result1 = await singleReplace1(routeReplacement1, content)
@@ -170,9 +170,9 @@ export const doGenerateRoute = async (thisRoute, gen) => {
   // await writeFile(5, serviceFileName, serviceJSCode)
 
   // *** Step 6 - insert route into db/index.js *******************************************************
-  routeReplacement1 = `const { ${route}Db } = require('./${route}-${methodLowerCase}.db') 
+  routeReplacement1 = `const { ${route}Db } = require('./${route}-${methodLowerCase}.db')
   //@insert1`
-  routeReplacement2 = `${route}Db, 
+  routeReplacement2 = `${route}Db,
   //@insert2`
   content = await readFile(targetRootDir + '/db/index.js')
   result1 = await singleReplace1(routeReplacement1, content)

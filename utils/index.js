@@ -14,6 +14,26 @@ export let singleReplace2 = async (routeReplacement2, res) => {
     console.log('Error in singleReplace2()', err)
   }
 }
+export let singleDelete1 = async (routeFind1, content) => {
+  try {
+    // console.log('\n-----------------------------------------------------------------------------------------------')
+    // console.log(content)
+    // console.log('\n\nsingleDelete1: \n', content.replace(routeFind1 + '\n', ''))
+    return content.replace(routeFind1 + '\n', '')
+  } catch (err) {
+    console.log('Error in singleDelete1()', err)
+  }
+}
+export let singleDelete2 = async (routeFind2, res) => {
+  try {
+    // console.log('\n-----------------------------------------------------------------------------------------------')
+    // console.log(res)
+    // console.log('\n\nsingleDelete2: \n', res.replace(routeFind2 + '\n', ''))
+    return res.replace(routeFind2 + '\n', '')
+  } catch (err) {
+    console.log('Error in singleDelete2()', err)
+  }
+}
 export let readFile = async (fullPath) => {
   try {
     const data = await fs.readFile(fullPath, 'utf8')

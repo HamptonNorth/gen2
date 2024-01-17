@@ -7,6 +7,7 @@ import { readFileSync, existsSync } from 'fs'
 import { doPurge } from './src/setup.js'
 import { doGenerateScaffold } from './src/scaffoldGeneration.js'
 import { doGenerateRoute } from './src/routeGeneration.js'
+import { doDeleteRoute } from './src/deleteRoutes.js'
 import { doValidateRouteConfigs } from './src/validateRoutesConfigs.js'
 // // const getRoutesGeneration = require('./src/getRoutesGeneration')
 // const getRoutesGeneration = require('./src/getRoutesGenerationAwait')
@@ -22,10 +23,10 @@ const help = process.argv.indexOf('--help') > -1 ? true : false
 const version = process.argv.indexOf('--version') > -1 ? true : false
 const purge = process.argv.indexOf('--purge') > -1 ? true : false
 const validate = process.argv.indexOf('--validate') > -1 ? true : false
-const delete_route = process.argv.indexOf('--delete_route') > -1 ? true : false
+const deleteRoute = process.argv.indexOf('--delete_route') > -1 ? true : false
 
 // must be one of skeleton, route, docs, help or version
-if (!scaffold && !route && !help && !version && !purge && !validate && !delete_route) {
+if (!scaffold && !route && !help && !version && !purge && !validate && !deleteRoute) {
   commandLineHelp('no option set or option is invalid')
 }
 
@@ -118,6 +119,53 @@ if (route) {
   }
 }
 
+if (deleteRoute) {
+  const deleteRouteIndex = process.argv.indexOf('--delete_route')
+  let deleteRouteArg
+  let commaListDeleteRouteArg
+
+  if (deleteRouteIndex > -1) {
+    // Retrieve the value after --route
+    deleteRouteArg = process.argv[3]
+    // console.log('--route arg passed:', routeArg)
+    if (typeof deleteRouteArg === 'undefined') {
+      commandLineHelp('delete_route option set but no route id provided')
+    }
+    if (typeof process.argv[4] === 'string') {
+      commandLineHelp('delete_route option set but too many arguements (hint: check for spaces e.g --route 1, 3)')
+    }
+    if (deleteRouteArg.slice(-1) === ',') {
+      commandLineHelp('delete_route option set but arguement string has trailing comma or an embedded space')
+    }
+
+    if (deleteRouteArg.toLowerCase() === 'all') {
+      // if routeArg contains range(s) expand to comma seprated list
+      console.log('all delete_routes set')
+      await idsFromFile().then((commaListDeleteRouteArg) => {
+        // console.log('commaListRouteArg', commaListRouteArg)
+        delRoutes(commaListDeleteRouteArg)
+        if (typeof commaListDeleteRouteArg.length == 0) {
+          commandLineHelp('getting array of ids from config file failed')
+        }
+      })
+    } else {
+      // if routeArg contains range(s) expand to comma seprated list
+      commaListDeleteRouteArg = await expandRange(deleteRouteArg)
+      await delRoutes(commaListDeleteRouteArg)
+      // console.log(
+      //   'commaListRouteArg:',
+      //   commaListRouteArg,
+      //   'typeof:',
+      //   typeof commaListRouteArg,
+      //   'length:',
+      //   commaListRouteArg.length,
+      //   'is array?:',
+      //   Array.isArray(commaListRouteArg)
+      // )
+    }
+  }
+}
+
 async function idsFromFile() {
   let path = gen.targetRoot + '/configs/routes-config.json'
   if (existsSync(path)) {
@@ -167,6 +215,37 @@ async function genRoutes(commaListRouteArg, method) {
     }
   }
   console.log('\n---\nRoute generation done')
+}
+
+async function delRoutes(commaListRouteArg, method) {
+  console.log('------------------------------------------')
+  console.log('Deleting routes for configuration id(s):', commaListRouteArg.toString())
+  console.log('Gen2')
+  console.log('---\n')
+  // check for duplicates
+  let t = Array.from(new Set(commaListRouteArg))
+  if (commaListRouteArg.length !== t.length) {
+    commandLineHelp('resulting array of routes contained duplicates')
+  }
+  for (let i = 0; i < commaListRouteArg.length; i++) {
+    let thisRoute = await getRouteDef(commaListRouteArg[i])
+    if (thisRoute.length === 0) {
+      console.log('Error - route does not exist!', commaListRouteArg[i])
+    } else {
+      // Generate this route
+      if (
+        thisRoute[0].method === 'GET' ||
+        thisRoute[0].method === 'POST' ||
+        thisRoute[0].method === 'PUT' ||
+        thisRoute[0].method === 'DELETE'
+      ) {
+        await doDeleteRoute(thisRoute[0], gen)
+      } else {
+        console.log('Error - invalid method!', thisRoute[0].method)
+      }
+    }
+  }
+  console.log('\n---\nRoute deletion done')
 }
 
 async function expandRange(routeArg) {

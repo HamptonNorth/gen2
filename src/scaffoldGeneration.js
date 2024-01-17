@@ -3,7 +3,7 @@ import * as fs from 'fs/promises'
 import { existsSync } from 'fs'
 import { doValidateRouteConfigs } from './validateRoutesConfigs.js'
 export const doGenerateScaffold = async (gen) => {
-  console.log('gen:', gen)
+  // console.log('gen:', gen)
 
   if (existsSync(gen.targetRoot + '/app.js')) {
     console.log('app.js exists. Use --purge first before scaffolding new project')

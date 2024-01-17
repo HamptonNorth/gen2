@@ -1,11 +1,11 @@
 # Generator version 2
 
-This is the second version of a generator for Node + Express + MySQL routes with consistent route, controller, service and data layers. Supports GET, POST, PUT and DELETE methods.
+This is the second version of a generator for Node + Express + MySQL routes with consistent route, controller and data layers. Supports GET, POST, PUT and DELETE methods.
 
 The following changes compared to the first versions are:
 
 1. Service layer removed. All routes in routes/index.js use a conroller which calls the dataaccess which reuturns the response.
-2. A new option added `--curl_export` or to restrict to given routes `--curl_export 1,5-7`. This creates a simple text file, one line per curl statement. This file may then be imported into say Insomniaor HTTPie ( - similar to Postman) and used for adhoc testing and simple visulaisation of API replies
+2. A new option added `--curl_export` or to restrict to given routes `--curl_export 1,5-7`. This creates a simple text file, one line per curl statement. This file may then be imported into say Insomnia or HTTPie ( - similar to Postman) and used for adhoc testing and simple visulaisation of API replies
 3. The `routes-config.json` has been simplified. The simplest possible route config is now:
 
 ```javascript
@@ -58,9 +58,9 @@ The original version 1 equivalent would have been:
 ]
 ```
 
-With the new config, the request response array is now an empty array `[]`
+With the new config, the request response array is now an empty array `[]`. Any valid JSON is returned if present.
 
-4. The `routes-config.json` file is always read from `gen2/configs/server-name/routes-config.json` e.g `configs\ph1_flat_server\routes-config.json`
+4. The `routes-config.json` file is always read from `server-name/configs/server-name/routes-config.json` e.g `ph1_flat_server\configs\routes-config.json`
 5. The code generated for the data access now uses `async/await` allowing multiple SQL statements to be executed in sequence. An example of SQL statemets being executed in sequence is given below:
 
 ```javascript
