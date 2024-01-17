@@ -26,7 +26,7 @@ export const doGenerateDocs = async (step, thisRoute, message, passedObjectKeys,
 ## /api/${thisRoute.name}
 
 >Description:  ${thisRoute.description}
-\`\`\`Text
+\`\`\`Javascript
 # method            ${thisRoute.method}
 # example                     /${thisRoute.name.toLowerCase()}
 # parameters                  ${message.substring(1)}
@@ -34,7 +34,7 @@ export const doGenerateDocs = async (step, thisRoute, message, passedObjectKeys,
     body +
     `
 \`\`\`
-\`\`\`Text
+\`\`\`JSON
 # success response            \n${JSON.stringify(thisRoute.requestresponse, null, '\t')}
 
 \`\`\`
