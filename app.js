@@ -11,7 +11,7 @@ import { doDeleteRoute } from './src/deleteRoutes.js'
 import { doValidateRouteConfigs } from './src/validateRoutesConfigs.js'
 // // const getRoutesGeneration = require('./src/getRoutesGeneration')
 // const getRoutesGeneration = require('./src/getRoutesGenerationAwait')
-// const postRoutesGeneration = require('./src/postRoutesGeneration')
+import { dotest_APIExport } from './src/testAPIExport.js'
 // const { exit } = require('node:process')
 
 // process command line options
@@ -24,9 +24,10 @@ const version = process.argv.indexOf('--version') > -1 ? true : false
 const purge = process.argv.indexOf('--purge') > -1 ? true : false
 const validate = process.argv.indexOf('--validate') > -1 ? true : false
 const deleteRoute = process.argv.indexOf('--delete_route') > -1 ? true : false
+const test_APIExport = process.argv.indexOf('--test_API_export') > -1 ? true : false
 
 // must be one of skeleton, route, docs, help or version
-if (!scaffold && !route && !help && !version && !purge && !validate && !deleteRoute) {
+if (!scaffold && !route && !help && !version && !purge && !validate && !deleteRoute && !test_APIExport) {
   commandLineHelp('no option set or option is invalid')
 }
 
@@ -166,6 +167,10 @@ if (deleteRoute) {
   }
 }
 
+if (test_APIExport) {
+  console.log('test_API_export result: ', await dotest_APIExport(gen))
+}
+
 async function idsFromFile() {
   let path = gen.targetRoot + '/configs/routes-config.json'
   if (existsSync(path)) {
@@ -291,7 +296,7 @@ function commandLineHelp(e) {
   console.log('\t  --route 1,5-7  \t add multiple routes id = 1,5,6,7')
   console.log('\t  --delete_route 1 \t delete multiple routes id = 1,5,6,7')
   console.log('\t  --delete_route 1,5-7\t delete multiple routes id = 1,5,6,7')
-  // console.log('\t  --docs     \t\t generate the API documentation in markdown and HTML')
+  console.log('\t  --test_API_export     \t create file with exported test_API statements')
   console.log('\t  --help     \t\t print this help')
   console.log('\t  --version  \t\t print version')
   console.log('\t  --validate  \t\t validate the route-configs.json')
