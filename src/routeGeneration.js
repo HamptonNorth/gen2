@@ -181,7 +181,7 @@ export const doGenerateRoute = async (thisRoute, gen) => {
 
   // *** Step 7 - db/route-${methodLowerCase}.db.js file **********************************************
   let testResponse =
-    '{"status": "success",	"data": {"users": [{"id": 1,"email": "someone@redmug.dev", "role": "superuser"},{"id": 2,"email": "support@redmug.dev", "role": "user"}]}}'
+    '{"id": 1,"email": "someone@redmug.dev", "role": "superuser"},{"id": 2,"email": "support@redmug.dev", "role": "user"}'
   if (thisRoute.requestresponse !== '') {
     testResponse = JSON.stringify(thisRoute.requestresponse)
   }
@@ -207,19 +207,28 @@ export const doGenerateRoute = async (thisRoute, gen) => {
     resWrapperEnd = `'}}'`
   }
   let dbPoolJSCode = `const pool = require('./db-pool.js')
+  const promisePool = pool.promise()
   //  const sql = require('./db.js')
-  const ${route}Db = (${passedObjectKeys}) => {
+  const ${route}Db = async (${passedObjectKeys}) => {
     ${sampleSQL}
-    // return sql
-    // return pool
-    //  .promise()
-    //  .query(q, [id])
-    //  .then(([rows]) => {
-    //    return JSON.parse(${resWrapperStart} +  JSON.stringify(rows) + ${resWrapperEnd})
-    //  }) 
-    let test = '${testResponse}'
-    return JSON.parse(test) 
+    // const[rows,fields] = await promisePool.query(q, [id])
+    // console.log('rows: ', rows)
+
+    // if(rows[0].adminuser){
+    // await aSecondDataBaseAsyncFunction(rows[0].id) 
+    // }
+    
+    //    return JSON.parse('{"status":"success", "data":{"users":[' + JSON.stringify(rows) + ']}}')
+   
+
+    // const aSecondDataBaseAsyncFunction = async (id) =>{
+    //   let q = 'UPDATE admin_users SET last_)login = NOW() WHERE id = ?
+    //   const [rows, fields] = await promisePool.query(q, [id])
+    // }
+
+    return JSON.parse('{"status":"success", "data":{"users":[' + JSON.stringify(${testResponse}) + ']}}')
   }  
+
   module.exports = {
     ${route}Db,
   }`
