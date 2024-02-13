@@ -1,6 +1,18 @@
 # Generator version 2
 
 This is a generator for Node + Express + MySQL which generates Rest like API code with consistent route, controller and data layers. Supports GET, POST, PUT and DELETE methods.
+Generates a default `/upload` route, method `POST` with a muti part `formData` body containing the write directory, file name, file and notes
+
+```
+{
+  dir: content/media/uploads
+  file_name: blue.jpg
+  file: data:image/jpeg;base64,/9j/4AAQSkZJRgABAgEAYABgAAD//gASTEVBRFRPT0xTIHYyMi4wAP/bAIQABQUFCAUIDAcHDAwJCQk
+  ..
+  ABQAUAFABQAUAFABQAUAFABQAUAFABQAUAFABQAUAFABQAUAFAH//Z
+  notes: test notes
+}
+```
 
 The server that code is being generated for is labelled as `server_name` in this readme.
 

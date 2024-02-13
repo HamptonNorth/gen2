@@ -56,6 +56,11 @@ app.listen(${gen.port}, () => {
 
   // Step 3 - create skeleton code for routes/index.js ----------------------------------------------------------
   let routesIndexJSCode = `const express = require('express')
+const multer = require('multer')
+const uploadImage = multer({ limits: { fieldSize: 25 * 1024 * 1024 } })
+// server always includes POST route /upload
+const { upload } = require('../controllers')
+
 //@insert1
 const router = express.Router()
 //@insert2
@@ -65,9 +70,12 @@ module.exports = router`
 
   // Step 4 - create skeleton code for contollers/index.js ----------------------------------------------------------
   let controllersIndexJSCode = `
+const upload = require('./upload-post.controller')
+
 //@insert1
 
 module.exports = {
+upload,
     //@insert2
   }`
   await writeFile(4, gen.targetRoot + '/controllers/index.js', controllersIndexJSCode)
@@ -195,16 +203,42 @@ module.exports = connection
   `
   await writeFile(11, gen.targetRoot + '/docs/API.docs.md', docsMDCode)
 
-  // // Step 12 - Copy  routes-config-sample.json to routes-config.js (in both /gen and /APPDIR)
-  // if (process.env.CREATEROUTESCONFIGFROMSAMPLE === 'YES') {
-  //   let routesConfigPath = `${process.env.APPPATH}${process.env.APPDIR}/configs/routes-config.json`
-  //   await fs.copyFile(`${process.env.APPPATH}/gen/configs/routes-config-sample.json`, routesConfigPath, 0)
-  //   routesConfigPath = `${process.env.APPPATH}/gen/configs/routes-config.json`
-  //   await fs.copyFile(`${process.env.APPPATH}/gen/configs/routes-config-sample.json`, routesConfigPath, 0)
-  //   console.log('Generation step 12 - ' + gen.targetRoot + '/configs/routes-config.json' + ' written successfully')
-  // }
+  writeFile(10, gen.targetRoot + '/tests/api-tests.test.js', testScaffoldJSCode)
 
-  // let valid = doValidateRouteConfigs()
+  // Step 12 - create upload-post-controller.js for fixed /upload POST route ---------------------------------------
+  let uploadPostControllerCode = `
+
+const fs = require('fs')
+
+const postUpload = async (req, res, next) => {
+  const file = req.body.file
+  const file_name = req.body.file_name
+  const r = saveFile(file, file_name)
+  if (r) {
+    return res.end('File uploaded successfully')
+  } else {
+    return res.end('Error Uploading File')
+  }
+}
+
+async function saveFile(file, file_name) {
+  let base64Data = file.replace(/^data:image\/(jpeg;base64|png;base64|webp;base64),/, '')
+
+  fs.writeFile('./content/media/uploads/' + file_name, base64Data, 'base64', function (err) {
+    if (err) {
+      console.log(err)
+      return false
+    } else {
+      return true
+    }
+  })
+}
+module.exports = {
+  postUpload,
+}
+
+  `
+  await writeFile(12, gen.targetRoot + '/controllers/upload-post-controllers.js', uploadPostControllerCode)
 
   console.log(
     '\nGenerating skeleton files for app: /' +
