@@ -286,8 +286,10 @@ async function getRouteDef(id) {
 }
 
 function commandLineHelp(e) {
+  let fullPath = process.env.APPPATH + process.env.APPDIR + '/configs/routes-config.json'
+  console.log('\nRoutes config: \x1b[32m', fullPath + '\x1B[0m\n')
   if (e !== '') {
-    console.error('\n\x1B[91m*** ERROR *** -', e, '\x1B[0m\n')
+    console.error('\x1B[91m*** ERROR *** -', e, '\x1B[0m\n')
   }
   console.log('Provide one from the following command line options : \n')
   console.log('\t  --purge\t\t deletes all generated directories and content')

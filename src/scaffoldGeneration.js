@@ -27,16 +27,25 @@ export const doGenerateScaffold = async (gen) => {
   // Step 1 - generate app.js skeleton code ----------------------------------------------------------
   let appJSCode = `const express = require('express')
 const bodyParser = require('body-parser')
+try{
+  require('multer')
+}catch{
+  console.log('*** ERROR *** - install multer, npm i multer')
+  process.exit(1)
+}
 const app = express()
 const cors = require('cors')
 const routes = require('./routes')
 app.use(bodyParser.json())
 app.use(bodyParser.urlencoded({ extended: true }))
-app.use(
-  cors({
-    origin: ['${process.env.ORIGIN}'],
-  })
-)
+var corsOptions = {
+  origin: '*',
+  methods: 'GET,HEAD,PUT,PATCH,POST,DELETE',
+  preflightContinue: false,
+  optionsSuccessStatus: 200, // some legacy browsers (IE11, various SmartTVs) choke on 204
+}
+
+app.use(cors(corsOptions))
 app.get('/', (req, res) => res.status(200).send('Generated REST API app is working'))
 app.use('/api', routes)
 
@@ -64,7 +73,7 @@ const { upload } = require('../controllers')
 //@insert1
 const router = express.Router()
 //@insert2
-
+router.post('/upload', uploadImage.single(), upload.postUpload)
 module.exports = router`
   writeFile(3, gen.targetRoot + '/routes/index.js', routesIndexJSCode)
 
@@ -222,7 +231,7 @@ const postUpload = async (req, res, next) => {
 }
 
 async function saveFile(file, file_name) {
-  let base64Data = file.replace(/^data:image\/(jpeg;base64|png;base64|webp;base64),/, '')
+  let base64Data = file.replace(/^data:image\\/(jpeg;base64|png;base64|webp;base64),/, '')
 
   fs.writeFile('./content/media/uploads/' + file_name, base64Data, 'base64', function (err) {
     if (err) {
@@ -238,7 +247,7 @@ module.exports = {
 }
 
   `
-  await writeFile(12, gen.targetRoot + '/controllers/upload-post-controllers.js', uploadPostControllerCode)
+  await writeFile(12, gen.targetRoot + '/controllers/upload-post.controller.js', uploadPostControllerCode)
 
   console.log(
     '\nGenerating skeleton files for app: /' +
