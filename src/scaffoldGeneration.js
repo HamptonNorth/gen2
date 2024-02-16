@@ -215,36 +215,43 @@ module.exports = connection
   writeFile(10, gen.targetRoot + '/tests/api-tests.test.js', testScaffoldJSCode)
 
   // Step 12 - create upload-post-controller.js for fixed /upload POST route ---------------------------------------
+  // quirk --- the let base64Data line needs double escape .. image\\/(jpeg ...)
   let uploadPostControllerCode = `
 
-const fs = require('fs')
-
-const postUpload = async (req, res, next) => {
-  const file = req.body.file
-  const file_name = req.body.file_name
-  const r = saveFile(file, file_name)
-  if (r) {
-    return res.end('File uploaded successfully')
-  } else {
-    return res.end('Error Uploading File')
+  const fs = require('fs')
+  const fsPromises = fs.promises
+  
+  const postUpload = (req, res, next) => {
+    const file = req.body.file
+    const file_name = req.body.file_name
+    const dir = req.body.dir
+    fsPromises
+      .access('./' + dir, fs.constants.W_OK)
+      .then(() => {
+        // directory exists
+        let base64Data = file.replace(/^data:image\\/(jpeg;base64|png;base64|webp;base64),/, '')
+        fsPromises
+          .writeFile('./' + dir + '/' + file_name, base64Data, 'base64')
+          .then(() => {
+            // file write okay
+            console.log('File uploaded:  ./' + dir + '/' + file_name)
+            return res.end('File uploaded successfully')
+          })
+          .catch(() => {
+            // file write fails
+            console.error('File write failed:  ./' + dir + '/' + file_name)
+            return res.end('Error  on save: ./' + dir + '/' + file_name)
+          })
+      })
+      .catch(() => {
+        console.log('Error - Directory does not exist (set in parent calling this component):  ' + dir)
+        return res.end('Error - Directory does not exist')
+      })
   }
-}
-
-async function saveFile(file, file_name) {
-  let base64Data = file.replace(/^data:image\\/(jpeg;base64|png;base64|webp;base64),/, '')
-
-  fs.writeFile('./content/media/uploads/' + file_name, base64Data, 'base64', function (err) {
-    if (err) {
-      console.log(err)
-      return false
-    } else {
-      return true
-    }
-  })
-}
-module.exports = {
-  postUpload,
-}
+  
+  module.exports = {
+    postUpload,
+  }
 
   `
   await writeFile(12, gen.targetRoot + '/controllers/upload-post.controller.js', uploadPostControllerCode)
