@@ -1,7 +1,7 @@
 [
   {
     "id": 1,
-    "name": "adminusers",
+    "name": "users",
     "method": "GET",
     "requestbody": "",
     "requestresponse": {
@@ -10,20 +10,22 @@
         "users": [
           {
             "id": 1,
-            "email": "rcollins@redmug.co.uk",
-            "role": "superuser"
+            "type": "Contract",
+            "name": "ADAS",
+            "contact": "Peter Stone"
           },
           {
             "id": 2,
-            "email": "jsmith@redmug.dev",
-            "role": "user"
+            "type": "One-off",
+            "name": "Kate & Simon Down 60th Birthday Party",
+            "contact": "Simon Downe"
           }
         ]
       }
     },
-    "description": "returns collection of admin users",
-    "failmessages": "no admin users exist|You need permission to list admin users - contact system administrator",
-    "testmatches": "users[0].email|users[1].email|users[0].role|users[1].role",
-    "notes": "This routes gets all admin users."
+    "description": "returns collection of  users",
+    "failmessages": "no users exist|You need permission to list admin users - contact system administrator",
+    "testmatches": "",
+    "notes": "This routes returns all admin users."
   }
 ]

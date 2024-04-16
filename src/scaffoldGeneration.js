@@ -10,6 +10,24 @@ export const doGenerateScaffold = async (gen) => {
     process.exit(1)
   }
 
+  // Check if the directory exists
+  if (existsSync(gen.targetRoot + '/configs')) {
+    console.log(gen.targetRoot + '/configs directory exists. Delete manually if required ******')
+    // process.exit(1)
+  } else {
+    let path = gen.targetRoot + '/configs'
+    console.log(path + ' directory does not exist')
+
+    await fs.mkdir(path),
+      (err) => {
+        if (err) {
+          console.error(err)
+          process.exit(1)
+        }
+      }
+    console.log(path + ' directory created')
+  }
+
   // Create all directories ----------------------------------------------------------
   for (let i = 0; i < gen.dirs.length; i++) {
     let path = gen.targetRoot + '/' + gen.dirs[i]
@@ -128,6 +146,7 @@ module.exports = {
   if (!existsSync(gen.targetRoot + '/configs/dbconfig.js')) {
     console.log(gen.targetRoot + '/configs/dbconfig.js' + ' does not exist')
     await writeFile(7, gen.targetRoot + '/configs/dbconfig.js', dbConfigJSCode)
+    console.log(gen.targetRoot + '/configs/dbconfig.js' + ' created with default connection parameters')
   }
 
   // Step 8 - create individual db connection /db/db.js ----------------------------------------------------------
@@ -261,4 +280,26 @@ module.exports = connection
       gen.targetDir +
       ' completed successfully ------------------------------------'
   )
+}
+
+function createConfigsDir() {
+  fs.access('configs', fs.constants.F_OK, (error) => {
+    if (error) {
+      if (error.code === 'ENOENT') {
+        // Directory does not exist, create it
+        fs.mkdir('configs', (err) => {
+          if (err) {
+            console.error('Error creating directory:', err)
+          } else {
+            console.log('configs directory created!')
+          }
+        })
+      } else {
+        // Handle other potential errors
+        console.error('Error checking directory:', error)
+      }
+    } else {
+      // Directory already exists
+    }
+  })
 }

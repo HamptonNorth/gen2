@@ -37,6 +37,8 @@ gen.port = process.env.PORT
 gen.targetDir = process.env.APPDIR
 gen.targetRoot = process.env.APPPATH + process.env.APPDIR
 // gen.dirs = ['configs', 'controllers', 'db', 'docs', 'routes', 'services', 'tests']
+
+// do not speicify 'configs' in gen.dirs array. If /configs does not exist it is always created in scaffold generation
 gen.dirs = ['controllers', 'db', 'docs', 'routes', 'tests']
 
 if (purge) {
