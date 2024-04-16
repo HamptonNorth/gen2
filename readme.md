@@ -85,7 +85,7 @@ npm init
 Install latest version of following `npm` packages:
 
 ```bash
-npm i express mysql2 uuid bcryptjs jsonwebtoken cors dotenv  --save
+npm i express mysql2 uuid bcryptjs jsonwebtoken cors dotenv multer  --save
 ```
 
 The resulting `package.json` file should resemble:
@@ -176,9 +176,10 @@ Provide one from the following command line options :
           --scaffold             generate directories and new boilerplate code
           --route 1              add route to a scaffold by id from configs/routes-config.json
           --route 1,5-7          add multiple routes id = 1,5,6,7
+          --route all            add all routes
           --delete_route 1       delete multiple routes id = 1,5,6,7
           --delete_route 1,5-7   delete multiple routes id = 1,5,6,7
-          --test_API_export              create file with exported test_API statements
+          --test_API_export      create file with exported test_API statements
           --help                 print this help
           --version              print version
           --validate             validate the route-configs.json
