@@ -82,7 +82,7 @@ export const doGenerateRoute = async (thisRoute, gen) => {
   // check if route already exists
   if (content.indexOf('/' + thisRoute.name.toLowerCase()) !== -1) {
     // if (process.env.OVERWRITEROUTE !== 'YES') {
-    console.log('ERROR - route exists. Existing routes must be deletd manually e.g  --delete_route 1,5-7')
+    console.log('ERROR - route exists. Existing routes must be deleted manually e.g  --delete_route 1,5-7')
     process.exit(1)
     // }
   }
@@ -108,7 +108,8 @@ export const doGenerateRoute = async (thisRoute, gen) => {
   } else if (parameterType === 'queryString') {
     controllerConst = ` const { ${passedObjectKeys} } = req.query `
   } else {
-    controllerConst = ` const { ${passedObjectKeys} } = req.body `
+    // In Express 5.1 the req.body property returns undefined when the body has not been parsed. In Express 4, it returns {} by default.
+    controllerConst = ` const { ${passedObjectKeys} } = req.body || {}`
   }
 
   let returnCode = '200'
