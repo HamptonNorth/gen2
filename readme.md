@@ -143,7 +143,7 @@ SERVERDESC="Test server for version 2 of Server Generator (/code/gen2/app.js)"
 
 The workflow might then be:
 
-1. Delete any existing directories or files in the server target directorye.g. `server_name` by running `node app.js --purge`
+1. Delete any existing directories or files in the server target directory e.g. `server_name` by running `node app.js --purge`
 2. Create the required directories and file scaffolds by running `node app.js --scaffold`
 3. Edit the `server_name/configs/routes-config.json` to match the route/routes needed
 4. Check the `/configs/routes-config.json` by running `node app.js --validate`
